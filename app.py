@@ -19,7 +19,7 @@ if tab == "🧠 ML":
 
     st.markdown("Input mix details below to predict compressive strength:")
 
-# Load and prepare data
+    # Load and prepare data
     df = pd.read_csv("concrete.csv")
     
     # Feature engineering
@@ -85,6 +85,9 @@ elif tab == "📊 Data Analysis":
     
     st.title("📊 Data Analysis")
     st.markdown("Explore various visualizations and patterns from the dataset.")
+
+    # Load and prepare data
+    df = pd.read_csv("concrete.csv")
 
     # Correlation Heatmap
     st.subheader("🔗 Correlation Heatmap")
