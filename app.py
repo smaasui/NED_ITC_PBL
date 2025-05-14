@@ -89,6 +89,24 @@ elif tab == "📊 Data Analysis":
     # Load and prepare data
     df = pd.read_csv("concrete.csv")
 
+    
+    # Feature engineering
+    df['water_cement_ratio'] = df['water'] / df['cement']
+    df['total_binder'] = df['cement'] + df['slag'] + df['ash']
+    df['water_per_binder'] = df['water'] / df['total_binder']
+    df['cement_share'] = df['cement'] / df['total_binder']
+    df['cement_x_sp'] = df['cement'] * df['superplastic']
+    df['slag_x_water'] = df['slag'] * df['water']
+    df['log_age'] = np.log1p(df['age'])
+    df['sp_water_ratio'] = df['superplastic'] / df['water']
+    df['agg_ratio'] = df['coarseagg'] / df['fineagg']
+    df['sp_per_binder'] = df['superplastic'] / df['total_binder']
+    df['total_mass'] = (
+        df['cement'] + df['slag'] + df['ash'] + df['water'] +
+        df['superplastic'] + df['coarseagg'] + df['fineagg']
+    )
+
+        
     # Correlation Heatmap
     st.subheader("🔗 Correlation Heatmap")
     st.markdown("Shows the linear correlation between all numerical features using Pearson coefficient.")
