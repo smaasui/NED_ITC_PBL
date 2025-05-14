@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,7 +8,32 @@ import seaborn as sns
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 
-        
+# Load and prepare data
+df = pd.read_csv("concrete.csv")
+
+# Feature engineering
+df['water_cement_ratio'] = df['water'] / df['cement']
+df['total_binder'] = df['cement'] + df['slag'] + df['ash']
+df['water_per_binder'] = df['water'] / df['total_binder']
+df['cement_share'] = df['cement'] / df['total_binder']
+df['cement_x_sp'] = df['cement'] * df['superplastic']
+df['slag_x_water'] = df['slag'] * df['water']
+df['log_age'] = np.log1p(df['age'])
+df['sp_water_ratio'] = df['superplastic'] / df['water']
+df['agg_ratio'] = df['coarseagg'] / df['fineagg']
+df['sp_per_binder'] = df['superplastic'] / df['total_binder']
+df['total_mass'] = (
+    df['cement'] + df['slag'] + df['ash'] + df['water'] +
+    df['superplastic'] + df['coarseagg'] + df['fineagg']
+)
+
+# Train model
+X = df.drop(columns=['strength'])
+y = df['strength']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000, learning_rate=0.05)
+model.fit(X_train, y_train)
+
 # App Layout
 st.set_page_config(page_title="Concrete Strength Predictor", layout="wide", page_icon='👷🏻‍♂️')
 
@@ -18,32 +44,6 @@ if tab == "🧠 ML":
     st.title("👨‍💻 Concrete Strength Predictor")
 
     st.markdown("Input mix details below to predict compressive strength:")
-
-    # Load and prepare data
-    df = pd.read_csv("concrete.csv")
-    
-    # Feature engineering
-    df['water_cement_ratio'] = df['water'] / df['cement']
-    df['total_binder'] = df['cement'] + df['slag'] + df['ash']
-    df['water_per_binder'] = df['water'] / df['total_binder']
-    df['cement_share'] = df['cement'] / df['total_binder']
-    df['cement_x_sp'] = df['cement'] * df['superplastic']
-    df['slag_x_water'] = df['slag'] * df['water']
-    df['log_age'] = np.log1p(df['age'])
-    df['sp_water_ratio'] = df['superplastic'] / df['water']
-    df['agg_ratio'] = df['coarseagg'] / df['fineagg']
-    df['sp_per_binder'] = df['superplastic'] / df['total_binder']
-    df['total_mass'] = (
-        df['cement'] + df['slag'] + df['ash'] + df['water'] +
-        df['superplastic'] + df['coarseagg'] + df['fineagg']
-    )
-    
-    # Train model
-    X = df.drop(columns=['strength'])
-    y = df['strength']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000, learning_rate=0.05)
-    model.fit(X_train, y_train)
 
     cement = st.number_input("Cement (kg/m³)")
     slag = st.number_input("Slag (kg/m³)")
@@ -86,27 +86,6 @@ elif tab == "📊 Data Analysis":
     st.title("📊 Data Analysis")
     st.markdown("Explore various visualizations and patterns from the dataset.")
 
-    # Load and prepare data
-    df = pd.read_csv("concrete.csv")
-
-    
-    # Feature engineering
-    df['water_cement_ratio'] = df['water'] / df['cement']
-    df['total_binder'] = df['cement'] + df['slag'] + df['ash']
-    df['water_per_binder'] = df['water'] / df['total_binder']
-    df['cement_share'] = df['cement'] / df['total_binder']
-    df['cement_x_sp'] = df['cement'] * df['superplastic']
-    df['slag_x_water'] = df['slag'] * df['water']
-    df['log_age'] = np.log1p(df['age'])
-    df['sp_water_ratio'] = df['superplastic'] / df['water']
-    df['agg_ratio'] = df['coarseagg'] / df['fineagg']
-    df['sp_per_binder'] = df['superplastic'] / df['total_binder']
-    df['total_mass'] = (
-        df['cement'] + df['slag'] + df['ash'] + df['water'] +
-        df['superplastic'] + df['coarseagg'] + df['fineagg']
-    )
-
-        
     # Correlation Heatmap
     st.subheader("🔗 Correlation Heatmap")
     st.markdown("Shows the linear correlation between all numerical features using Pearson coefficient.")
