@@ -1,3 +1,72 @@
+# app.py
+
+# import streamlit as st
+# import pandas as pd
+# import numpy as np
+# import joblib
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+
+# # Load model with caching
+# @st.cache_resource
+# def load_model():
+#     return joblib.load("model.pkl")
+
+# model = load_model()
+
+# # Tab simulation
+# tab = st.sidebar.selectbox("Choose a tab", ["🧠 ML"])
+
+# if tab == "🧠 ML":
+#     st.title("👨‍💻 Concrete Strength Predictor")
+#     st.markdown("Input mix details below to predict compressive strength:")
+
+#     # Inputs
+#     cement = st.number_input("Cement (kg/m³)", min_value=0.0)
+#     slag = st.number_input("Slag (kg/m³)", min_value=0.0)
+#     ash = st.number_input("Fly Ash (kg/m³)", min_value=0.0)
+#     water = st.number_input("Water (kg/m³)", min_value=0.0)
+#     superplastic = st.number_input("Superplasticizer (kg/m³)", min_value=0.0)
+#     coarseagg = st.number_input("Coarse Aggregate (kg/m³)", min_value=0.0)
+#     fineagg = st.number_input("Fine Aggregate (kg/m³)", min_value=0.0)
+#     age = st.number_input("Age (days)", min_value=1.0)
+
+#     if st.button("Predict Strength"):
+#         try:
+#             # Input checks
+#             if cement == 0 or water == 0 or (cement + slag + ash) == 0 or fineagg == 0:
+#                 st.warning("🚫 Cement, Water, Total Binder, and Fine Aggregate must be non-zero.")
+#             else:
+#                 total_binder = cement + slag + ash
+#                 input_data = pd.DataFrame([{
+#                     'cement': cement,
+#                     'slag': slag,
+#                     'ash': ash,
+#                     'water': water,
+#                     'superplastic': superplastic,
+#                     'coarseagg': coarseagg,
+#                     'fineagg': fineagg,
+#                     'age': age,
+#                     'water_cement_ratio': water / cement,
+#                     'total_binder': total_binder,
+#                     'water_per_binder': water / total_binder,
+#                     'cement_share': cement / total_binder,
+#                     'cement_x_sp': cement * superplastic,
+#                     'slag_x_water': slag * water,
+#                     'log_age': np.log1p(age),
+#                     'sp_water_ratio': superplastic / water,
+#                     'agg_ratio': coarseagg / fineagg,
+#                     'sp_per_binder': superplastic / total_binder,
+#                     'total_mass': cement + slag + ash + water + superplastic + coarseagg + fineagg
+#                 }])
+
+#                 prediction = model.predict(input_data)[0]
+#                 st.success(f"✅ Predicted Compressive Strength: **{prediction:.2f} MPa**")
+
+#         except Exception as e:
+#             st.error(f"❌ Prediction failed: {e}")
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -37,21 +106,21 @@ model.fit(X_train, y_train)
 st.set_page_config(page_title="Concrete Strength Predictor", layout="wide", page_icon='👷🏻‍♂️')
 
 st.sidebar.title("Navigation")
-tab = st.sidebar.radio("Go to", ["🧠 ML", "📊 Data Analysis", "ℹ️ About App", "👨‍💻 About Me"])
+tab = st.sidebar.radio("Go to", ["🧠 ML", "📊 Data Analysis", "📕 About App", "🎓 About Us", "👨‍💻 About Me"])
 
 if tab == "🧠 ML":
     st.title("👨‍💻 Concrete Strength Predictor")
 
     st.markdown("Input mix details below to predict compressive strength:")
 
-    cement = st.number_input("Cement (kg/m³)", 100, 600)
-    slag = st.number_input("Slag (kg/m³)", 0, 300)
-    ash = st.number_input("Fly Ash (kg/m³)", 0, 300)
-    water = st.number_input("Water (kg/m³)", 100, 250)
-    superplastic = st.number_input("Superplasticizer (kg/m³)", 0.0, 30.0)
-    coarseagg = st.number_input("Coarse Aggregate (kg/m³)", 800, 1200)
-    fineagg = st.number_input("Fine Aggregate (kg/m³)", 500, 1000)
-    age = st.number_input("Age (days)", 1, 365)
+    cement = st.number_input("Cement (kg/m³)")
+    slag = st.number_input("Slag (kg/m³)")
+    ash = st.number_input("Fly Ash (kg/m³)")
+    water = st.number_input("Water (kg/m³)")
+    superplastic = st.number_input("Superplasticizer (kg/m³)")
+    coarseagg = st.number_input("Coarse Aggregate (kg/m³)")
+    fineagg = st.number_input("Fine Aggregate (kg/m³)")
+    age = st.number_input("Age (days)")
 
     if st.button("Predict Strength"):
         total_binder = cement + slag + ash
@@ -81,8 +150,7 @@ if tab == "🧠 ML":
         st.success(f"✅ Predicted Compressive Strength: **{prediction:.2f} MPa**")
 
 elif tab == "📊 Data Analysis":
-    plt.grid(True)
-
+    
     st.title("📊 Data Analysis")
     st.markdown("Explore various visualizations and patterns from the dataset.")
 
@@ -109,6 +177,7 @@ elif tab == "📊 Data Analysis":
     """)
     df['water_binder_ratio'] = df['water'] / (df['cement'] + df['slag'] + df['ash'])
     sns.scatterplot(data=df, x='water_binder_ratio', y='strength', hue='age', palette='coolwarm')
+    plt.grid(True, linestyle='--', alpha=0.5)
     st.pyplot(plt.gcf())
     plt.clf()
 
@@ -152,6 +221,7 @@ elif tab == "📊 Data Analysis":
     ax.set_xlabel('Cement')
     ax.set_ylabel('Water')
     ax.set_zlabel('Strength')
+    plt.grid(True, linestyle='--', alpha=0.5)
     st.pyplot(fig)
 
     # PCA Projection
@@ -175,35 +245,162 @@ elif tab == "📊 Data Analysis":
     st.pyplot(plt.gcf())
     plt.clf()
 
-elif tab == "ℹ️ About App":
-    st.title("ℹ️ About This App")
+elif tab == "📕 About App":
+    st.title("About This Application")
+    st.image("https://blog.novatr.com/hubfs/A%20robot%20examining%20the%20architectural%20plan.png",
+             use_container_width=True, caption="Concrete Strength Meets Machine Learning")
+
     st.markdown("""
-    This web application predicts the **compressive strength** of concrete using machine learning.
-    
-    ### 🔍 Features:
-    - Inputs for mix design components
-    - Real-time prediction using **XGBoost model**
-    - Visual analysis of trends
-    - Engineering-based feature enhancements
+    <h3 style='color:#4A90E2;'>🏗️ What is This App?</h3>
+    <p>
+        This app predicts the <strong>compressive strength</strong> of concrete using advanced machine learning models based on the ingredient mix proportions.
+        It is designed for engineers, data scientists, and educators to simulate or validate concrete mix performance without the need for lab testing.
+    </p>
+    """, unsafe_allow_html=True)
 
-    **Target Variable:** `Strength (MPa)`  
-    **Tools Used:** Python, Scikit-learn, XGBoost, Matplotlib, Seaborn, Streamlit
+    st.markdown("""
+    <h3 style='color:#4A90E2;'>🧠 Technology Stack</h3>
+    <ul>
+        <li><strong>Python 3.10</strong></li>
+        <li><strong>Scikit-learn, XGBoost</strong> for ML</li>
+        <li><strong>Pandas, NumPy</strong> for data handling</li>
+        <li><strong>Matplotlib, Seaborn</strong> for visualizations</li>
+        <li><strong>Streamlit</strong> for the web interface</li>
+    </ul>
+    """, unsafe_allow_html=True)
 
-    Dataset: Preprocessed version of the **Concrete Compressive Strength Dataset** (SI Units)
-    """)
+    st.image("https://cdn.prod.website-files.com/60d07e2eecb304cb4350b53f/66545cdc3d33685d1f5ea0b0_ai%20in%20civil%20engineering%20-%20cover.jpg",
+             use_container_width=True, caption="Machine Learning Pipeline (Source: GitHub - dipanjanS)")
+
+    st.markdown("""
+    <h3 style='color:#4A90E2;'>📊 Key Features</h3>
+    <ul>
+        <li>🎯 Predicts concrete strength from user-defined mix proportions</li>
+        <li>🔍 Interactive data visualizations and statistical insights</li>
+        <li>🧪 Uses engineered features like water-cement ratio, binder weight, log-age etc.</li>
+        <li>🤖 Trained on real-world dataset with XGBoost and other ML models</li>
+        <li>📥 Uses data from UCI Machine Learning Repository (SI units)</li>
+    </ul>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <h3 style='color:#4A90E2;'>🏗️ Why This Matters</h3>
+    <p>
+        Concrete strength prediction is vital for infrastructure planning, cost optimization, and quality control. 
+        Traditional methods are time-consuming and costly. This tool enables early-stage design decisions using machine learning.
+    </p>
+    """, unsafe_allow_html=True)
+
+    st.image("https://www.batchmix.co.uk/wp-content/uploads/2023/12/what-is-concrete-body.jpg",
+             use_container_width=True, caption="A Smarter Way to Engineer Concrete")
+
+    st.markdown("""
+    <h3 style='color:#4A90E2;'>📚 Dataset Source</h3>
+    <p>
+        This app uses the <strong>Concrete Compressive Strength Dataset</strong> from the 
+        <a href="https://archive.ics.uci.edu/ml/datasets/Concrete+Compressive+Strength" target="_blank">
+        UCI Machine Learning Repository</a>. The dataset includes 1,030 observations with 8 input features and 1 output (strength).
+    </p>
+    """, unsafe_allow_html=True)
 
 elif tab == "👨‍💻 About Me":
-    st.title("👨‍💻 About the Creator")
+    st.write("# 🏅 Syed Muhammad Abdullah Abdulbadeeii")
+    col1, col2, col3 = st.columns([4.5,1,4.5])
+    with col1:
+    # Personal Title 🏅🌟💡🌱🌍👤
+        st.write("\n\n")
+        st.markdown(
+        "<img src='https://raw.githubusercontent.com/smaasui/SMAASU/main/16.jpeg' width='550'>",
+        unsafe_allow_html=True)
 
-    st.markdown("""
-    **Name:** S.M. Abdullah Abdulbadeeii  
-    **Profession:** Student | Engineer | Visionary  
-    **Company:** SMAASU Corporation  
-    **Goal:** Bringing societal change through **spirituality, logic, technology, and perpetuity**.
+        # st.image("https://raw.githubusercontent.com/smaasui/SMAASU/main/16.jpeg", use_container_width=True, width=100)
+        # Expertise & Interests
+        st.write("\n\n")
+        st.write("# 🚀 Areas of Expertise")
+        st.markdown(
+            """
+            - 🏗️ **Civil Engineering & Smart Infrastructure** – Engineering sustainable and innovative urban solutions.
+            - 💻 **Software & Web Development** – Creating intelligent digital solutions to optimize efficiency.
+            - 🤖 **Artificial Intelligence & Data Science** – Harnessing AI-driven technologies for smarter decision-making.
+            - 📊 **Data Processing & Automation** – Streamlining complex workflows through advanced automation.
+            - 🚀 **Entrepreneurship & Technological Innovation** – Spearheading startups that drive meaningful change.
+            - ❤️ **Philanthropy & Social Impact** – Advocating for and supporting communities in need.
+            """
+        )
 
-    🧠 Believer in learning by doing.  
-    📌 Passionate about **AI**, **ML**, **engineering**, and the **betterment of Ummah**.
 
-    ✨ *"Leaving a lasting essence in the world is more important than just existing in it."*
-    """)
+    with col3:
+        st.write("# 🌱 About Me")
+        # Introduction
+        st.markdown(
+            """
+            I am **Syed Muhammad Abdullah Abdulbadeeii**, a **Civil Engineering Student at NED University of Engineering & Technology, Entrepreneur, Innovator, and Philanthropist**. 
+            With a deep passion for **Artificial Intelligence, Architecture, and Sustainable Urbanization**, I am committed to pioneering **Transformative Solutions** that seamlessly integrate technology with real-world applications.
+            
+            My work is driven by a vision to **Build a Smarter, More Sustainable Future**, where cutting-edge innovations enhance efficiency, improve urban living, and empower businesses. 
+            Beyond my professional pursuits, I am dedicated to **philanthropy**, striving to **uplift Muslims and support underprivileged communities**, fostering a society rooted in compassion, empowerment, and progress.
+            """
+        )
+        
+        # Vision & Journey
+        st.write("# 🌍 My Vision & Journey")
+        st.markdown(
+            """
+            As the founder of **SMAASU Corporation**, I have led groundbreaking initiatives such as **Data Duster**, a web-based platform revolutionizing data processing and automation. 
+            My entrepreneurial journey is fueled by a relentless drive to **bridge the gap between technology and urban development**, delivering impactful solutions that **redefine the future of cities and industries**.
+            
+            **I believe in innovation, sustainability, and the power of technology to transform lives.** Through my work, I strive to create solutions that not only drive efficiency but also foster inclusivity and social well-being.
+            
+            **Let’s collaborate to build a brighter, more progressive future!**
+            """
+        )
+        
+    st.write("# 🔗 Engineering connections !")
+    st.link_button("🔗 Stay connected on LinkedIn!", "https://www.linkedin.com/in/smaasui/")
 
+
+elif tab == "🎓 About Us":
+
+    # Company Title
+    st.write("# 🏢 About SMAASU Corporation")
+
+    # Introduction
+    st.markdown(
+        """
+        **SMAASU Corporation** is a forward-thinking company committed to innovation in **technology, architecture, and sustainable urbanization**.
+        Our vision is to create cutting-edge solutions that simplify workflows, enhance productivity, and contribute to a smarter, more efficient future.
+        """
+    )
+
+    # Mission Section
+    st.header("🌍 Our Mission")
+    st.markdown(
+        """
+        At **SMAASU Corporation**, we aim to:
+        - 🚀 **Develop pioneering software solutions** that enhance business efficiency.
+        - 🏗️ **Revolutionize architecture and urban planning** with smart, sustainable designs.
+        - 🌱 **Promote sustainability** in every project we undertake.
+        - 🤝 **Empower businesses and individuals** with next-gen technology.
+        """
+    )
+
+    # Core Values Section
+    st.header("💡 Our Core Values")
+    st.markdown(
+        """
+        - **Innovation** – Continuously pushing boundaries with cutting-edge technology.
+        - **Sustainability** – Building a future that is eco-friendly and efficient.
+        - **Excellence** – Delivering top-tier solutions with precision and quality.
+        - **Integrity** – Upholding transparency and trust in every endeavor.
+        """
+    )
+
+    # Call to Action
+    st.markdown(
+        """
+        🚀 **Join us on our journey to create a smarter, more sustainable world with SMAASU Corporation!**
+        """,
+        unsafe_allow_html=True
+    )
+
+ 
